@@ -375,6 +375,10 @@ module ParseResource
       !persisted?
     end
 
+    def new_record?
+      new?
+    end
+
     def ==(other)
       attributes == other.attributes
     end
