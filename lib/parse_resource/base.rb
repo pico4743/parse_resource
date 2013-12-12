@@ -448,7 +448,9 @@ module ParseResource
 
     def post_result(resp, req, res, &block)
       if resp.code.to_s == "200" || resp.code.to_s == "201"
-        merge_attributes(JSON.parse(resp))
+        attrs = JSON.parse(resp)
+        attrs['updatedAt'] = attrs['createdAt'] if attrs['updatedAt'].nil?
+        merge_attributes(attrs)
         return true
       else
         error_response = JSON.parse(resp)
