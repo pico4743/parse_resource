@@ -375,6 +375,10 @@ module ParseResource
       !persisted?
     end
 
+    def ==(other)
+      attributes == other.attributes
+    end
+
     # delegate from Class method
     def resource
       self.class.resource
