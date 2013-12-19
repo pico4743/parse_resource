@@ -316,6 +316,29 @@ module ParseResource
       false
     end
 
+    # Creates a RESTful resource for file deletions
+    # sends requests to [base_uri]/filename
+    #
+    def self.delete_file(filename)
+      load_settings
+
+      base_uri = "https://api.parse.com/1/files"
+
+      #refactor to settings['app_id'] etc
+      app_id     = @@settings['app_id']
+      master_key = @@settings['master_key']
+
+      options = {}
+      filename = filename.parameterize
+
+      private_resource = RestClient::Resource.new "#{base_uri}/#{filename}", app_id, master_key
+      private_resource.delete(options) do |resp, req, res, &block|
+        return false if resp.code == 400
+        return JSON.parse(resp) rescue {"code" => 0, "error" => "unknown error"}
+      end
+      false
+    end
+
     # Find a ParseResource::Base object by ID
     #
     # @param [String] id the ID of the Parse object you want to find.
@@ -374,12 +397,10 @@ module ParseResource
     def new?
       !persisted?
     end
-
-    def new_record?
-      new?
-    end
+    alias :new_record? :new?
 
     def ==(other)
+      return false if !other.respond_to?(:attributes)
       attributes == other.attributes
     end
 
